@@ -1,0 +1,45 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@87.5,500;87.5,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'web/app.css' %}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 18h7l3-9 5 16 4-11 2 4h7' fill='none' stroke='%231F5F8B' stroke-width='3' stroke-linejoin='round' stroke-linecap='round'/></svg>">
+</head>
+<body>
+  <header class="topbar" hidden id="topbar">
+    <a class="brand" href="#/" aria-label="Pulse home">
+      <svg viewBox="0 0 64 24" aria-hidden="true"><path d="M1 13h14l4-9 6 17 5-12 3 4h30"/></svg>
+      <span>Pulse</span>
+    </a>
+    <nav class="topnav">
+      <button class="bell" id="bell" aria-haspopup="dialog" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/></svg>
+        <span class="count" id="unread" hidden>0</span>
+      </button>
+      <button class="link" id="teamBtn" hidden>Team &amp; services</button>
+      <span class="who" id="who"></span>
+      <button class="link" id="logout">Sign out</button>
+    </nav>
+  </header>
+
+  <main id="app" aria-live="polite"></main>
+
+  <aside class="drawer" id="drawer" hidden aria-label="Notifications">
+    <div class="drawer-head">
+      <h2>Notifications</h2>
+      <button class="link" id="markAll">Mark all read</button>
+      <button class="icon" id="closeDrawer" aria-label="Close notifications">×</button>
+    </div>
+    <ol id="notes"></ol>
+  </aside>
+
+  <dialog id="dlg"></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="{% static 'web/app.js' %}" defer></script>
+</body>
+</html>

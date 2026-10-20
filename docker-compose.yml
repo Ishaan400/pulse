@@ -1,0 +1,83 @@
+# Pulse production stack.
+#   cp .env.example .env   # then fill in secrets
+#   docker compose up -d --build
+name: pulse
+
+x-app: &app
+  build: .
+  image: pulse:latest
+  env_file: .env
+  environment:
+    DATABASE_URL: postgres://${POSTGRES_USER:-pulse}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-pulse}
+    CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-pulse}:${RABBITMQ_PASSWORD}@rabbitmq:5672//
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-pulse}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pulse} -d ${POSTGRES_DB:-pulse}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:3.13-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-pulse}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD in .env}
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+  web:
+    <<: *app
+    command: ["web"]
+    ports:
+      - "${PULSE_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    <<: *app
+    command: ["worker"]
+
+  beat:
+    <<: *app
+    command: ["beat"]
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    restart: unless-stopped
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - promdata:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"   # local only; tunnel or proxy to view
+    depends_on:
+      - web
+
+volumes:
+  pgdata:
+  rabbitdata:
+  promdata:

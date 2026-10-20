@@ -1,0 +1,50 @@
+# Render Blueprint: Dashboard → New → Blueprint → pick this repo.
+# Everything is on the free plan. You'll be asked for the values marked sync: false.
+databases:
+  - name: pulse-db
+    plan: free
+    databaseName: pulse
+    user: pulse
+
+services:
+  - type: web
+    name: pulse
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: sh deploy/render-start.sh
+    healthCheckPath: /api/health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pulse-db
+          property: connectionString
+      # Celery uses PostgreSQL as its broker on the free plan (see config/settings.py).
+      - key: CELERY_BROKER_URL
+        value: database
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECURE_COOKIES
+        value: "1"
+      - key: DJANGO_BEHIND_TLS_PROXY
+        value: "1"
+      - key: DJANGO_TIME_ZONE
+        value: Asia/Kolkata
+      - key: GUNICORN_WORKERS
+        value: "2"
+      - key: PULSE_SLA_CHECK_SECONDS
+        value: "60"
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: PULSE_ADMIN_USERNAME
+        sync: false
+      - key: PULSE_ADMIN_EMAIL
+        sync: false
+      - key: PULSE_ADMIN_PASSWORD
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
