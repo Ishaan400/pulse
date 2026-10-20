@@ -148,13 +148,16 @@ REST_FRAMEWORK = {
 
 # --- Celery (RabbitMQ broker) -----------------------------------------------
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
-if CELERY_BROKER_URL == "database":
+if os.environ.get("PULSE_CELERY_BROKER") == "database" or CELERY_BROKER_URL == "database":
     # Use PostgreSQL itself as the broker (kombu SQLAlchemy transport). Used on
     # Render's free plan, which has no free RabbitMQ and one free Redis per account.
     _db = os.environ.get("DATABASE_URL", "")
     CELERY_BROKER_URL = "sqla+" + _db.replace("postgres://", "postgresql+psycopg://", 1).replace(
         "postgresql://", "postgresql+psycopg://", 1
     )
+# Celery reads the CELERY_BROKER_URL environment variable directly and lets it
+# override Django settings, so keep the environment in step with the final value.
+os.environ["CELERY_BROKER_URL"] = CELERY_BROKER_URL
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_TASK_ALWAYS_EAGER", False)

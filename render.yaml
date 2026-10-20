@@ -22,7 +22,7 @@ services:
           name: pulse-db
           property: connectionString
       # Celery uses PostgreSQL as its broker on the free plan (see config/settings.py).
-      - key: CELERY_BROKER_URL
+      - key: PULSE_CELERY_BROKER
         value: database
       - key: DJANGO_SECRET_KEY
         generateValue: true
