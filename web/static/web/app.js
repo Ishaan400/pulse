@@ -111,6 +111,15 @@
           <input id="p" type="password" autocomplete="current-password" required>
           <button class="btn" type="submit">Sign in</button>
           <p class="error" id="loginErr" role="alert"></p>
+          <div class="login-note">
+            <h3>Need an account?</h3>
+            <p>Ask your Pulse admin. There's no public sign-up: an admin creates each account and assigns its role, so nobody can give themselves more access than their job needs.</p>
+            <ul>
+              <li><b>Engineers</b> report incidents and work the ones assigned to them.</li>
+              <li><b>Managers</b> assign engineers and close or cancel incidents.</li>
+              <li><b>Admins</b> manage people and services.</li>
+            </ul>
+          </div>
         </form>
       </div>`;
     $("#loginForm").addEventListener("submit", async (e) => {

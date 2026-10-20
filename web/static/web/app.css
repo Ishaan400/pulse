@@ -194,6 +194,12 @@ section.block > h2 .link { font: 400 .9rem var(--body); margin-left: auto; }
 .login-art p { color: color-mix(in srgb, var(--ground) 75%, transparent); margin-top: 1rem; }
 .login form { align-self: center; padding: 2rem clamp(1.25rem, 4vw, 3rem); }
 .login form .btn { width: 100%; margin-top: 1.25rem; padding: .6rem; }
+.login-note { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: .9rem; color: var(--ink-2); }
+.login-note h3 { color: var(--ink); margin-bottom: .4rem; }
+.login-note p { margin-bottom: .6rem; }
+.login-note ul { margin: 0; padding-left: 1.1rem; }
+.login-note li { margin-bottom: .25rem; }
+.login-note b { color: var(--ink); }
 
 /* --- drawer, dialog, toast ------------------------------------------------- */
 .drawer {
